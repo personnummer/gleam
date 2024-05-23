@@ -1,29 +1,25 @@
-# gleam_personnummer
+# personnummer
 
-A Gleam program
-
-
-## Quick start
+[![Package Version](https://img.shields.io/hexpm/v/personnummer)](https://hex.pm/packages/personnummer)
+[![Hex Docs](https://img.shields.io/badge/hex-docs-ffaff3)](https://hexdocs.pm/personnummer/)
 
 ```sh
-# Build the project
-rebar3 compile
+gleam add personnummer
+```
+```gleam
+import personnummer
 
-# Run the eunit tests
-rebar3 eunit
-
-# Run the Erlang REPL
-rebar3 shell
+pub fn main() {
+  // TODO: An example of the project in use
+}
 ```
 
+Further documentation can be found at <https://hexdocs.pm/personnummer>.
 
-## Installation
+## Development
 
-If [available in Hex](https://www.rebar3.org/docs/dependencies#section-declaring-dependencies)
-this package can be installed by adding `gleam_personnummer` to your `rebar.config` dependencies:
-
-```erlang
-{deps, [
-    gleam_personnummer
-]}.
+```sh
+gleam run   # Run the project
+gleam test  # Run the tests
+gleam shell # Run an Erlang shell
 ```
