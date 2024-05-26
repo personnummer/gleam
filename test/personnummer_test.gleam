@@ -1,4 +1,6 @@
+import gleam/int
 import gleam/list
+import gleam/string
 import gleeunit
 import gleeunit/should
 import personnummer
@@ -64,4 +66,70 @@ pub fn gender_test() {
       expect_is_female,
     )
   })
+}
+
+pub fn age_test() {
+  let #(#(current_year, current_month, current_day), _) = personnummer.now()
+  let forty_years_ago = { current_year - 40 } % 1900
+
+  let #(y1, m1, d1) = case current_month > 1 {
+    True -> #(forty_years_ago, current_month - 1, current_day)
+    False -> #(forty_years_ago - 1, 12, 31)
+  }
+
+  let #(y2, m2, d2) = case current_month < 12 {
+    True -> #(forty_years_ago, current_month + 1, current_day)
+    False -> #(forty_years_ago + 1, 1, 1)
+  }
+
+  let assert Ok(forty) =
+    string.concat([
+      int.to_string(y1),
+      int.to_string(m1)
+        |> string.pad_left(to: 2, with: "0"),
+      int.to_string(d1)
+        |> string.pad_left(to: 2, with: "0"),
+      "0000",
+    ])
+    |> personnummer.new()
+
+  let assert Ok(forty_one) =
+    string.concat([
+      int.to_string(forty_years_ago - 1),
+      int.to_string(current_month)
+        |> string.pad_left(to: 2, with: "0"),
+      int.to_string(current_day)
+        |> string.pad_left(to: 2, with: "0"),
+      "0000",
+    ])
+    |> personnummer.new()
+
+  let assert Ok(thirty_nine) =
+    string.concat([
+      int.to_string(y2),
+      int.to_string(m2)
+        |> string.pad_left(to: 2, with: "0"),
+      int.to_string(d2)
+        |> string.pad_left(to: 2, with: "0"),
+      "0000",
+    ])
+    |> personnummer.new()
+
+  should.equal(
+    forty
+      |> personnummer.age(),
+    40,
+  )
+
+  should.equal(
+    forty_one
+      |> personnummer.age(),
+    41,
+  )
+
+  should.equal(
+    thirty_nine
+      |> personnummer.age(),
+    39,
+  )
 }

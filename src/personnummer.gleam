@@ -7,6 +7,17 @@ import gleam/regex
 import gleam/result
 import gleam/string
 
+/// DateTime represents the type return from Erlang `local_time`.
+pub type DateTime =
+  #(#(Int, Int, Int), #(Int, Int, Int))
+
+// An external function call to calendar.local_time/0. This is marked as public
+// to be able to use from unit tests but is not intended to be used by external
+// packages.
+// https://www.erlang.org/doc/apps/stdlib/calendar#local_time/0
+@external(erlang, "calendar", "local_time")
+pub fn now() -> DateTime
+
 /// A representation of a date in time, holding a year, month and day.
 pub type Date {
   Date(year: Int, month: Int, day: Int)
@@ -151,6 +162,20 @@ fn valid_date(date: Date) -> Bool {
         _ -> date.day <= 28
       }
     False -> False
+  }
+}
+
+/// Get the age of the person holding the passed personnummer.
+pub fn age(pnr: Personnummer) -> Int {
+  let #(#(current_year, current_month, current_day), _) = now()
+
+  case pnr.date.month > current_month {
+    True -> current_year - pnr.date.year - 1
+    False ->
+      case pnr.date.month == current_month && pnr.date.day > current_day {
+        True -> current_year - pnr.date.year - 1
+        False -> current_year - pnr.date.year
+      }
   }
 }
 
