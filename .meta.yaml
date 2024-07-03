@@ -1,0 +1,4 @@
+name: "Gleam"
+maintainer: "@bombsimon"
+spec: 3.0
+workflow: "test.yml"
