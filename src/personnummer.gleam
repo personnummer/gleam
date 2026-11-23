@@ -1,9 +1,8 @@
 import gleam/bool
 import gleam/int
-import gleam/iterator
 import gleam/list
 import gleam/option
-import gleam/regex
+import gleam/regexp
 import gleam/result
 import gleam/string
 
@@ -58,10 +57,10 @@ pub type PersonnummerError {
 /// - 860612-4434
 pub fn new(pnr: String) -> Result(Personnummer, PersonnummerError) {
   let assert Ok(re) =
-    regex.from_string(
+    regexp.from_string(
       "^(\\d{2}){0,1}(\\d{2})(\\d{2})(\\d{2})([-+]{0,1})(\\d{3})(\\d{0,1})$",
     )
-  case regex.scan(with: re, content: pnr) {
+  case regexp.scan(with: re, content: pnr) {
     [] -> Error(PersonnummerError(error: "Invalid format"))
     [x, ..] -> new_from_matches(x)
   }
@@ -71,7 +70,7 @@ pub fn new(pnr: String) -> Result(Personnummer, PersonnummerError) {
 /// string to integers and create a `Personnummer`. This doesn't consider
 /// invalid dates so an object can hold an invalid date.
 fn new_from_matches(
-  matches: regex.Match,
+  matches: regexp.Match,
 ) -> Result(Personnummer, PersonnummerError) {
   let assert [century, year, month, day, divider, serial, control] =
     matches.submatches
@@ -113,18 +112,18 @@ pub fn format(pnr: Personnummer, long_format: Bool) -> String {
       |> int.to_string(),
     pnr.date.month
       |> int.to_string()
-      |> string.pad_left(to: 2, with: "0"),
+      |> string.pad_start(to: 2, with: "0"),
     pnr.date.day
       |> int.to_string()
-      |> string.pad_left(to: 2, with: "0"),
+      |> string.pad_start(to: 2, with: "0"),
     pnr.separator,
     pnr.serial
       |> int.to_string()
-      |> string.pad_left(to: 3, with: "0"),
+      |> string.pad_start(to: 3, with: "0"),
     option.unwrap(pnr.control, 0)
       |> int.to_string(),
   ])
-  |> string.drop_left(up_to: up_to)
+  |> string.drop_start(up_to: up_to)
 }
 
 /// Check if the personnummer is valid. It's considered valid if the date is a
@@ -203,19 +202,13 @@ pub fn is_male(pnr: Personnummer) -> Bool {
 fn luhn(digits: String) -> Int {
   10
   - {
-    list.zip(
-      digits
-        |> string.drop_right(up_to: 1)
-        |> string.split("")
-        |> list.map(fn(n) { result.unwrap(int.base_parse(n, 10), 0) }),
-      iterator.from_list([2, 1])
-        |> iterator.cycle
-        |> iterator.take(string.length(digits))
-        |> iterator.to_list(),
-    )
-    |> list.map(fn(pair) {
-      let #(a, b) = pair
-      { a * b }
+    digits
+    |> string.drop_end(up_to: 1)
+    |> string.split("")
+    |> list.map(fn(n) { result.unwrap(int.base_parse(n, 10), 0) })
+    // Weights alternate 2, 1, 2, 1, ... starting from the first digit.
+    |> list.index_map(fn(n, i) {
+      { n * { 2 - i % 2 } }
       |> int.to_string()
     })
     |> string.join("")

@@ -86,9 +86,9 @@ pub fn age_test() {
     string.concat([
       int.to_string(y1),
       int.to_string(m1)
-        |> string.pad_left(to: 2, with: "0"),
+        |> string.pad_start(to: 2, with: "0"),
       int.to_string(d1)
-        |> string.pad_left(to: 2, with: "0"),
+        |> string.pad_start(to: 2, with: "0"),
       "0000",
     ])
     |> personnummer.new()
@@ -97,9 +97,9 @@ pub fn age_test() {
     string.concat([
       int.to_string(forty_years_ago - 1),
       int.to_string(current_month)
-        |> string.pad_left(to: 2, with: "0"),
+        |> string.pad_start(to: 2, with: "0"),
       int.to_string(current_day)
-        |> string.pad_left(to: 2, with: "0"),
+        |> string.pad_start(to: 2, with: "0"),
       "0000",
     ])
     |> personnummer.new()
@@ -108,9 +108,9 @@ pub fn age_test() {
     string.concat([
       int.to_string(y2),
       int.to_string(m2)
-        |> string.pad_left(to: 2, with: "0"),
+        |> string.pad_start(to: 2, with: "0"),
       int.to_string(d2)
-        |> string.pad_left(to: 2, with: "0"),
+        |> string.pad_start(to: 2, with: "0"),
       "0000",
     ])
     |> personnummer.new()
